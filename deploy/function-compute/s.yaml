@@ -1,0 +1,38 @@
+edition: 3.0.0
+name: rightflow-autopilot
+access: default
+
+resources:
+  rightflow:
+    component: fc3
+    props:
+      region: ap-southeast-1
+      functionName: rightflow-autopilot
+      description: Human-in-the-loop Qwen Cloud social-rights orchestration
+      runtime: custom.debian10
+      handler: index.handler
+      code: ../../.fc-package
+      cpu: 0.5
+      memorySize: 512
+      diskSize: 512
+      timeout: 60
+      internetAccess: true
+      environmentVariables:
+        NODE_ENV: production
+        PORT: "9000"
+        HOSTNAME: "0.0.0.0"
+        DASHSCOPE_API_KEY: ${env('DASHSCOPE_API_KEY')}
+      customRuntimeConfig:
+        command:
+          - /code/.node/bin/node
+        args:
+          - server.js
+      triggers:
+        - triggerName: public-http
+          triggerType: http
+          triggerConfig:
+            authType: anonymous
+            methods:
+              - GET
+              - POST
+              - OPTIONS
