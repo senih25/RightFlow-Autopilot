@@ -6,6 +6,10 @@ RightFlow turns an ambiguous citizen narrative into validated case facts. After 
 
 ![RightFlow Autopilot](./public/rightflow-devpost-thumbnail.png)
 
+## Live demo
+
+https://rightflutopilot-xuldemxbed.ap-southeast-1.fcapp.run/rightflow-autopilot
+
 ## Architecture
 
 ![Architecture](./public/rightflow-architecture.jpg)
@@ -42,18 +46,18 @@ npm run build
 
 ## Alibaba Cloud deployment
 
-The application is packaged as a standalone Next.js container. Build and push the image to Alibaba Cloud Container Registry, then run it on ECS using [`deploy/ecs-compose.yaml`](./deploy/ecs-compose.yaml).
+The public demo runs on **Alibaba Cloud Function Compute** in the Singapore region using the free promotional quota. The reproducible deployment manifest is [`deploy/function-compute/s.yaml`](./deploy/function-compute/s.yaml).
+
+![Alibaba Cloud Function Compute deployment proof](./docs/rightflow-alibaba-deployment.png)
+
+The repository also includes an optional container deployment path through [`deploy/ecs-compose.yaml`](./deploy/ecs-compose.yaml).
 
 ```bash
 docker build -t rightflow-autopilot .
 docker run --rm -p 8080:8080 --env-file .env.local rightflow-autopilot
 ```
 
-Required deployment evidence:
-
-- Alibaba Cloud console showing the service in `Running` state
-- Public application URL
-- Repository link to the Dockerfile or ECS manifest
+The HTTP trigger is public for judging, while the DashScope credential remains a server-side Function Compute environment variable and is never exposed to the browser or repository.
 
 ## Safety boundary
 
