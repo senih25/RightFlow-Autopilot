@@ -8,7 +8,7 @@ RightFlow turns an ambiguous citizen narrative into validated case facts. After 
 
 ## Live demo
 
-https://rightflutopilot-xuldemxbed.ap-southeast-1.fcapp.run/rightflow-autopilot
+https://rightflow.sosyalhakrehberi.com/rightflow-autopilot
 
 ## Architecture
 
