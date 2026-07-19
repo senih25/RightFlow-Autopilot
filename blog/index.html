@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The engineering journey behind RightFlow Autopilot, an explainable Qwen Cloud agent for turning ambiguous life stories into human-reviewed social-rights workflows.">
+  <title>Building RightFlow Autopilot with Qwen Cloud</title>
+  <style>
+    :root { --ink:#17211d; --muted:#60706a; --paper:#f7f4ed; --card:#fffdf8; --accent:#087f6b; --line:#d9ded9; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:18px/1.72 Georgia, "Times New Roman", serif; }
+    header, main, footer { width:min(920px, calc(100% - 36px)); margin:auto; }
+    header { padding:72px 0 34px; }
+    .eyebrow { color:var(--accent); font:700 12px/1.2 Arial, sans-serif; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { max-width:820px; margin:14px 0 18px; font-size:clamp(42px,7vw,72px); line-height:1.02; letter-spacing:-.035em; }
+    .dek { max-width:760px; color:#40504a; font-size:23px; line-height:1.45; }
+    .meta { color:var(--muted); font:14px/1.5 Arial, sans-serif; }
+    article { background:var(--card); border:1px solid var(--line); border-radius:24px; padding:clamp(24px,6vw,68px); box-shadow:0 20px 60px rgba(24,43,35,.07); }
+    h2 { margin:2.2em 0 .65em; font-size:32px; line-height:1.18; letter-spacing:-.02em; }
+    h3 { margin:1.8em 0 .45em; font:700 19px/1.3 Arial, sans-serif; }
+    p { margin:0 0 1.25em; }
+    a { color:#006b5c; text-underline-offset:3px; }
+    figure { margin:2.2em 0; }
+    img { width:100%; border:1px solid var(--line); border-radius:14px; display:block; }
+    figcaption { margin-top:10px; color:var(--muted); font:13px/1.5 Arial, sans-serif; }
+    blockquote { margin:2em 0; padding:20px 24px; border-left:4px solid var(--accent); background:#edf5f1; font-size:21px; }
+    .callout { margin:2em 0; padding:24px; border:1px solid #bad6cc; border-radius:14px; background:#f0f8f5; }
+    .callout strong { font-family:Arial, sans-serif; }
+    code { padding:.12em .35em; border-radius:5px; background:#e8ede9; font-size:.88em; }
+    ul { padding-left:1.25em; }
+    li { margin:.55em 0; }
+    footer { padding:34px 0 70px; color:var(--muted); font:14px/1.6 Arial, sans-serif; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Qwen Cloud Hackathon · Build Journal</div>
+    <h1>Turning a life story into a safe next step</h1>
+    <p class="dek">How I built RightFlow Autopilot: an explainable Qwen-powered caseworker that understands messy human narratives, pauses for human review, and uses deterministic rules for consequential decisions.</p>
+    <p class="meta">By Senih Bayankulu · July 19, 2026 · Autopilot Agent Track</p>
+  </header>
+
+  <main>
+    <article>
+      <p>People do not arrive at a public-service desk speaking in database fields. They say, “My mother lives with us, her health is getting worse, and I do not know what support we can ask for.” The system on the other side asks for age, household size, income, disability documentation, insurance status, and dozens of other facts.</p>
+
+      <p>That gap between a human story and an administrative process is where applications are abandoned and caseworkers lose time. It also looked like exactly the kind of ambiguous, real-world workflow the Autopilot Agent track was asking us to tackle.</p>
+
+      <p>I started RightFlow Autopilot with one constraint: the language model could help understand the story, but it would not be allowed to make the legal or eligibility decision. That constraint shaped every part of the product.</p>
+
+      <blockquote>AI understands the narrative. Humans verify the facts. Rules decide what happens next.</blockquote>
+
+      <h2>The problem was not “add a chatbot”</h2>
+
+      <p>Social-rights guidance is a high-consequence domain. A fluent answer can still be incomplete, outdated, or confidently wrong. A conventional chatbot would make the interface feel easier while leaving the hardest questions unresolved: Which facts came from the citizen? Which were inferred? What rule produced the recommendation? Who approved the action?</p>
+
+      <p>I wanted the system to show its work. A caseworker or citizen should be able to follow the path from the original narrative to extracted facts, through a human checkpoint, into a bounded screening result. If a required fact is missing, the honest output is a question—not a guess.</p>
+
+      <h2>Designing the workflow around trust</h2>
+
+      <p>The resulting pipeline has five deliberate stages:</p>
+
+      <ol>
+        <li><strong>Natural-language intake.</strong> The user describes the situation in their own words.</li>
+        <li><strong>Qwen extraction.</strong> Qwen 3.7 Plus converts only explicitly stated details into a strict fact schema.</li>
+        <li><strong>Validation and safety checks.</strong> The backend normalizes values, rejects fields outside the allowlist, detects prompt-injection patterns, and fails closed when output cannot be trusted.</li>
+        <li><strong>Human review.</strong> A visible checkpoint requires a person to confirm the structured facts before screening continues.</li>
+        <li><strong>Deterministic screening.</strong> Versioned rules identify relevant review pathways, missing evidence, and safe next steps. Every stage is recorded in an audit timeline.</li>
+      </ol>
+
+      <figure>
+        <img src="../public/rightflow-architecture.jpg" alt="RightFlow Autopilot architecture showing the browser, Alibaba Cloud Function Compute, Qwen Cloud and deterministic screening">
+        <figcaption>The production boundary: Qwen performs bounded extraction; deterministic code owns consequential screening.</figcaption>
+      </figure>
+
+      <p>This separation is more than an architecture diagram. It is a product promise. The model is excellent at interpreting varied language, while code is better at repeatable comparisons and auditability. RightFlow uses each where it is strongest.</p>
+
+      <h2>A concrete case</h2>
+
+      <p>In the demo, the citizen explains that her 68-year-old mother lives in a household of three, the household has a monthly income of 28,500 Turkish lira, and a disability report exists. Qwen turns that paragraph into four reviewable facts: age, household size, income, and whether a disability report was mentioned.</p>
+
+      <p>The interface does not immediately announce that the person “qualifies.” It asks a human to verify the extraction. Once approved, deterministic tools screen possible pathways such as older-person support, home-care support, and a GSS review. GSS means <em>Genel Sağlık Sigortası</em>, Turkey’s General Health Insurance system. The result explains which conditions appear relevant, what information is still missing, and which official channel should be consulted.</p>
+
+      <div class="callout"><strong>Important boundary:</strong> RightFlow is a guidance and preparation tool. It does not issue an official decision, guarantee a benefit, or replace the responsible public institution.</div>
+
+      <h2>What Qwen Cloud changed</h2>
+
+      <p>The first version of the broader SocialRightOS frontend already explored access to social-rights information. During the hackathon, I rebuilt the critical intake flow as a standalone agent around Qwen Cloud. The new work included structured Qwen extraction, a dedicated orchestration API, human approval, deterministic screening tools, an audit timeline, adversarial-input boundaries, automated tests, and a new interface focused on a single end-to-end job.</p>
+
+      <p>Qwen’s role is intentionally narrow but essential. Real users may express the same fact in many ways, mix important details with emotion, or omit the terminology used by official forms. Qwen provides the flexible language layer that maps these narratives into a predictable schema. The backend then verifies that schema before anything consequential can happen.</p>
+
+      <h2>The difficult engineering decisions</h2>
+
+      <h3>1. Resisting invisible inference</h3>
+
+      <p>The tempting approach was to let the model “complete” a case from context. That would make more fields look filled, but it would weaken trust. I changed the prompt and validation contract so that unknown values remain unknown. Confidence is displayed for review, and the raw narrative is not persisted by the workflow.</p>
+
+      <h3>2. Making fallback behavior honest</h3>
+
+      <p>Cloud APIs can time out or return malformed output. RightFlow has a bounded timeout and a deterministic demo fallback, but the fallback is labelled. The UI never presents locally generated sample extraction as a live Qwen result. This small detail matters: graceful degradation should preserve truth, not only uptime.</p>
+
+      <h3>3. Deploying without turning cost into a hidden risk</h3>
+
+      <p>I deployed the standalone Next.js application to Alibaba Cloud Function Compute in the Singapore region. The public HTTP trigger gives judges a no-login test path, while the DashScope credential remains a server-side environment variable. Function Compute also matched the project’s usage pattern: short, event-driven requests rather than an always-on virtual machine.</p>
+
+      <figure>
+        <img src="../docs/rightflow-alibaba-deployment.jpg" alt="Alibaba Cloud Function Compute console showing the deployed rightflow-autopilot function">
+        <figcaption>RightFlow Autopilot running on Alibaba Cloud Function Compute.</figcaption>
+      </figure>
+
+      <p>The deployment is reproducible from the public repository. The Function Compute manifest defines the custom runtime, memory and CPU limits, public HTTP trigger, and server-side secret binding. This makes the cloud proof inspectable instead of relying on a screenshot alone.</p>
+
+      <h2>What I learned</h2>
+
+      <p>The most important lesson was that “agentic” does not have to mean unrestricted. A useful production agent can be autonomous about coordination—understanding input, selecting bounded tools, assembling an audit trail—while still stopping at the exact moment human judgment is required.</p>
+
+      <p>I also learned that explainability has to be designed into the data flow. It cannot be added at the end as a paragraph generated by the same model. RightFlow’s explanation comes from visible facts, named rule checks, missing fields, and timestamped stages. That makes it possible to test and improve each layer independently.</p>
+
+      <p>Finally, the deployment work reinforced a practical point: cost-efficiency is part of production readiness. A public-interest prototype is more credible when another team can reproduce it, understand its cloud footprint, and operate it without committing to unnecessary infrastructure.</p>
+
+      <h2>Where this could have an impact</h2>
+
+      <p>RightFlow’s immediate value is reducing the translation burden between citizens and social-service workflows. A better intake can help a caseworker start with cleaner facts, help a citizen understand what evidence to gather, and make handoffs easier to audit.</p>
+
+      <p>The larger pattern is reusable. The same architecture can support other domains where language is ambiguous but decisions must remain controlled: insurance intake, municipal permits, nonprofit referrals, compliance triage, and healthcare administration. The schemas and deterministic tools change; the trust boundary remains.</p>
+
+      <p>There is still serious work ahead. Program rules need jurisdiction-specific versioning and review by domain experts. Accessibility testing must include older users and people with disabilities. A production deployment would need formal privacy assessment, monitoring, multilingual evaluation, and institutional governance. I see those not as footnotes, but as the roadmap.</p>
+
+      <h2>Try it and inspect it</h2>
+
+      <p>The <a href="https://rightflutopilot-xuldemxbed.ap-southeast-1.fcapp.run/rightflow-autopilot">live demo</a> is available without credentials. The complete implementation, tests, safety boundaries, and Alibaba Cloud deployment manifest are in the <a href="https://github.com/senih25/RightFlow-Autopilot">open-source repository</a>.</p>
+
+      <p>RightFlow began with a simple observation: asking for help should not require knowing the language of the system in advance. Qwen Cloud helped bridge that language gap. The rest of the engineering work was about making sure the bridge has guardrails.</p>
+    </article>
+  </main>
+
+  <footer>
+    Built by Senih Bayankulu for the Global AI Hackathon Series with Qwen Cloud. RightFlow Autopilot is an independent prototype and does not provide official legal or eligibility decisions.
+  </footer>
+</body>
+</html>
