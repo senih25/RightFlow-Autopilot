@@ -1,0 +1,24 @@
+{
+  "name": "rightflow-autopilot",
+  "version": "1.0.0",
+  "private": false,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -H 0.0.0.0 -p 8080",
+    "test": "node --experimental-strip-types --test src/lib/rightflow.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "postcss": "^8.5.10",
+    "typescript": "5.9.3"
+  }
+}
