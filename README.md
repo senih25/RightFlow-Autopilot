@@ -48,7 +48,7 @@ npm run build
 
 The public demo runs on **Alibaba Cloud Function Compute** in the Singapore region using the free promotional quota. The reproducible deployment manifest is [`deploy/function-compute/s.yaml`](./deploy/function-compute/s.yaml).
 
-![Alibaba Cloud Function Compute deployment proof](./docs/rightflow-alibaba-deployment.png)
+![Alibaba Cloud Function Compute deployment proof](./docs/rightflow-alibaba-deployment.jpg)
 
 The repository also includes an optional container deployment path through [`deploy/ecs-compose.yaml`](./deploy/ecs-compose.yaml).
 
